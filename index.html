@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trystero API Observer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Trystero API Observer</h1>
+    <div class="strategy-selector">
+      <label for="strategy">Strategy:</label>
+      <select id="strategy">
+        <option value="nostr" selected>Nostr (default)</option>
+        <option value="torrent">BitTorrent</option>
+        <option value="mqtt">MQTT</option>
+        <option value="firebase">Firebase</option>
+        <option value="supabase">Supabase</option>
+        <option value="ipfs">IPFS</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <section class="connection-panel">
+      <h2>Connection</h2>
+      <div class="connection-controls">
+        <input type="text" id="roomId" value="demo-room" placeholder="Room ID">
+        <button id="joinRoom">Join Room</button>
+        <button id="leaveRoom" disabled>Leave Room</button>
+      </div>
+      <div class="connection-status">
+        <p>Status: <span id="status">Disconnected</span></p>
+        <p>Self ID: <span id="selfId">-</span></p>
+      </div>
+    </section>
+
+    <section class="peers-panel">
+      <h2>Peers</h2>
+      <div id="peersList" class="peers-list"></div>
+    </section>
+
+    <section class="actions-panel">
+      <h2>Actions</h2>
+      <div class="action-controls">
+        <input type="text" id="actionName" value="message" placeholder="Action name">
+        <textarea id="actionData" placeholder="Message data (JSON)">{"text": "Hello from Trystero!"}</textarea>
+        <button id="sendAction" disabled>Send to All</button>
+        <button id="sendFile" disabled>Send File</button>
+        <input type="file" id="fileInput" style="display: none;">
+      </div>
+      <div class="action-log">
+        <h3>Activity Log</h3>
+        <div id="actionLog" class="log"></div>
+      </div>
+    </section>
+
+    <section class="media-panel">
+      <h2>Media</h2>
+      <div class="media-controls">
+        <button id="shareCamera" disabled>Share Camera</button>
+        <button id="shareScreen" disabled>Share Screen</button>
+        <button id="stopSharing" disabled>Stop Sharing</button>
+      </div>
+      <div class="streams-container">
+        <div class="local-stream">
+          <h3>Local Stream</h3>
+          <video id="localVideo" autoplay muted playsinline></video>
+        </div>
+        <div class="remote-streams" id="remoteStreams">
+          <!-- Remote streams will be added here dynamically -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+  
+  <footer>
+    <p>Network Information:</p>
+    <div id="networkInfo" class="network-info">
+      <p><strong>RTCPeerConnection Stats:</strong> <span id="rtcStats">-</span></p>
+      <p><strong>Relay Sockets:</strong> <span id="relaySockets">-</span></p>
+    </div>
+    
+    <div class="websocket-monitor">
+      <div class="monitor-header">
+        <h3>WebSocket Traffic Monitor</h3>
+        <div class="monitor-controls">
+          <button id="clearWsLog">Clear</button>
+          <button id="pauseWsLog">Pause</button>
+          <label><input type="checkbox" id="filterSdp" checked> Filter SDP Messages</label>
+          <button id="showInfo" class="info-button">What am I seeing?</button>
+        </div>
+      </div>
+      <div id="wsInfo" class="ws-info" style="display:none;">
+        <h4>Understanding WebSocket Traffic in Trystero</h4>
+        <p>This panel shows the raw WebSocket messages being sent and received by Trystero. Here's what you're seeing:</p>
+        <ul>
+          <li><strong>Signaling Messages:</strong> WebRTC requires an initial "signaling" phase to exchange connection information like IPs and ports. This happens over WebSockets.</li>
+          <li><strong>SDP Messages:</strong> Session Description Protocol messages contain the technical details needed to establish peer connections. These are large and are filtered by default.</li>
+          <li><strong>Peer Discovery:</strong> Messages to find and connect to other peers in the same room.</li>
+          <li><strong>Heartbeats:</strong> Regular messages to maintain connections with signaling servers.</li>
+        </ul>
+        <p>Once WebRTC connections are established, direct peer-to-peer communication happens outside these WebSockets.</p>
+        <p>The specific protocol and message format varies by strategy (nostr, torrent, etc.).</p>
+      </div>
+      <div id="wsMonitor" class="ws-log"></div>
+    </div>
+  </footer>
+</body>
+</html>
